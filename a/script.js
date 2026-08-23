@@ -1,6 +1,6 @@
 const tooltip = document.querySelector(".tooltip");
 const tooltipOffset = 10;
-const lastfm_api = "http://127.0.0.1:3000";
+const lastfm_api = "https://lastfm.mayu.amy.rip";
 
 let last_song_name = "";
 let currentMinutes = 0;
@@ -166,9 +166,9 @@ async function updateMusicInfo() {
     musicElement.querySelector(".current_time").textContent =
       `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
     
-    if (currentSongName !== last_song_name) {
-      break;
-    }
+      if (currentSongName !== last_song_name) {
+        break;
+      }
   }
 
 }
