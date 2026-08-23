@@ -150,6 +150,10 @@ async function updateMusicInfo() {
   while (currentSongName === last_song_name) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     currentSeconds++;
+    if (currentMinutes < 0) {
+      currentMinutes = 0;
+    }
+
     if (currentSeconds >= 60) {
       currentSeconds = 0;
       currentMinutes++;
