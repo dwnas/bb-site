@@ -10,7 +10,14 @@
   --filter-1: sepia(100%) hue-rotate(250deg) saturate(60%);
 }
 
-
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% - 1rem));
+  }
+}
 
 @keyframes flicker {
   0% {
@@ -24,18 +31,23 @@
   }
 }
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 html,
 body {
-  
   color: var(--text-std-c);
-  font-family:
-    "Libertinus Serif Display", "Times New Roman",
-    serif;
+  font-family: "Libertinus Serif Display", "Times New Roman", serif;
   font-size: 18px;
   line-height: 0.9;
   max-height: 100%;
   transition: all 0.3s ease-in-out;
-  
 }
 html {
   background-color: var(--bg-c);
@@ -126,7 +138,6 @@ html {
   border: var(--border-c) solid 1px;
   position: relative;
   min-width: 200px;
-
 }
 
 .left,
@@ -160,7 +171,6 @@ html {
   max-width: 200px;
 }
 
-
 .badges {
   display: flex;
   flex-wrap: wrap;
@@ -188,7 +198,6 @@ html {
 
   transition: 0.1s ease;
 }
-
 
 ul {
   list-style-type: none;
@@ -220,7 +229,6 @@ li {
   width: 300px;
 }
 
-
 @media (max-width: 530px) {
   .main {
     flex-direction: column;
@@ -232,12 +240,79 @@ li {
     width: 90%;
   }
 
-  html, body {
+  html,
+  body {
     font-size: 17px;
   }
-  
+
   .content {
     margin: 20px auto 0;
   }
 }
 
+.music {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.album_art {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  animation: spin 10s linear infinite;
+  margin-right: 10px;
+  margin-left: -10px;
+
+  filter: drop-shadow(0 0 5px var(--text-link-c))
+    drop-shadow(0 0 10px var(--text-link-c-alt));
+}
+
+.song_name {
+  font-size: 30px;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  max-width: 200px;
+}
+
+.song_name .marquee_track {
+  display: inline-block;
+}
+
+.marquee {
+  text-overflow: unset;
+}
+
+.song_name.marquee .marquee_track {
+  padding-left: 100%;
+  animation: marquee 10s linear infinite;
+}
+
+.playtime {
+  display: flex;
+  flex-direction: row;
+}
+
+.progress_bar {
+  width: 100%;
+  height: 5px;
+  background-color: var(--border-c);
+  border-radius: 2.5px;
+  overflow: hidden;
+  margin: 5px 2px;
+  align-self: flex-start;
+}
+
+.music_info {
+  width: 100%;
+}
+
+.artist_info a {
+  color: var(--text-link-c);
+  filter: grayscale(50%);
+}
