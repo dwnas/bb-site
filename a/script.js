@@ -106,14 +106,20 @@ async function updateMusicInfo() {
       return;
     }
 
-  last_song_name = musicData.name;
+  const songChanged = musicData.name !== last_song_name;
+  if (songChanged) {
+    last_song_name = musicData.name;
 
-  let marqueeTrack = songNameElement.querySelector(".marquee_track");
-  if (!marqueeTrack) {
-    marqueeTrack = document.createElement("span");
+    const marqueeTrack = document.createElement("span");
     marqueeTrack.className = "marquee_track";
     songNameElement.textContent = "";
     songNameElement.appendChild(marqueeTrack);
+
+    if (musicData.url && musicData.url !== "") {
+      marqueeTrack.innerHTML = `<a href="${musicData.url}" target="_blank" rel="noopener noreferrer">${musicData.name}</a>`;
+    } else {
+      marqueeTrack.textContent = musicData.name;
+    }
   }
 
   if (musicData) {
@@ -123,11 +129,11 @@ async function updateMusicInfo() {
         : "img/default_album_art.jpg";
 
     if (musicData.url && musicData.url !== "") {
-      marqueeTrack.innerHTML = `<a href="${musicData.url}" target="_blank" rel="noopener noreferrer">${musicData.name}</a>`;
       musicElement.querySelector(".artist_info").innerHTML =
         `<a href="${musicData.url.split("/_/")[0]}" target="_blank" rel="noopener noreferrer">${musicData.artist}</a> - ${musicData.album}`;
     } else {
-      marqueeTrack.textContent = musicData.name;
+      musicElement.querySelector(".artist_info").textContent =
+        `${musicData.artist} - ${musicData.album}`;
     }
 
     if (musicData.playtime) {
@@ -148,9 +154,11 @@ async function updateMusicInfo() {
     }
   }
 
-  songNameElement.classList.remove("marquee");
-  if (songNameElement.scrollWidth > songNameElement.clientWidth) {
-    songNameElement.classList.add("marquee");
+  if (songChanged) {
+    songNameElement.classList.remove("marquee");
+    if (songNameElement.scrollWidth > songNameElement.clientWidth) {
+      songNameElement.classList.add("marquee");
+    }
   }
 
   // update song duration for 10s until next update
