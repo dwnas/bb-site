@@ -1,6 +1,7 @@
 const tooltip = document.querySelector(".tooltip");
 const tooltipOffset = 10;
-const lastfm_api = "https://lastfm.mayu.amy.rip";
+//const lastfm_api = "https://lastfm.mayu.amy.rip";
+const lastfm_api = "http://127.0.0.1:3000";
 
 let last_song_name = "";
 let currentMinutes = 0;
@@ -34,7 +35,7 @@ document.addEventListener("mousemove", (e) => {
 
 //////////////////
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   // caitlyn told me to do random images so i did this
   const ch = document.querySelector(".ch");
   const chImg = ch.querySelector("img");
@@ -57,29 +58,53 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   ////////////////
 
-  await updateMusicInfo();
-  setInterval(async () => {
-    await updateMusicInfo();
-  }, 10000);
+  updateMusicInfo();
+  setInterval(updateMusicInfo, 10000);
+  setInterval(updateDisplayedPlaytime, 1000);
 });
 
-async function updateMusicInfo() {
-  const MUSIC = await fetch(lastfm_api);
-  const musicData = await MUSIC.json();
-  const musicElement = document.querySelector(".music");
-  const songNameElement = musicElement.querySelector(".song_name");
-
-
-  if (!musicData || !musicData.name) {
-    musicElement.querySelector(".album_art").src = "img/default_album_art.jpg";
-    songNameElement.textContent = "Not Listening";
-    document.querySelector(".artist_info").textContent = "No Artist";
-    document.querySelector(".playtime").style.visibility = "hidden";
-  }
-
-  if (musicData.name === last_song_name) {
+function updateDisplayedPlaytime() {
+  const playtimeElement = document.querySelector(".playtime");
+  if (playtimeElement.style.visibility !== "visible") {
     return;
   }
+
+  if (
+    currentMinutes > songLengthMinutes ||
+    (currentMinutes === songLengthMinutes && currentSeconds >= songLengthSeconds)
+  ) {
+    return;
+  }
+
+  currentSeconds++;
+  if (currentSeconds >= 60) {
+    currentSeconds = 0;
+    currentMinutes++;
+  }
+
+  document.querySelector(".current_time").textContent =
+    `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
+}
+
+async function updateMusicInfo() {
+  try {
+    const response = await fetch(lastfm_api);
+    if (!response.ok) {
+      throw new Error(`Music API returned ${response.status}`);
+    }
+
+    const musicData = await response.json();
+    const musicElement = document.querySelector(".music");
+    const songNameElement = musicElement.querySelector(".song_name");
+
+    if (!musicData || !musicData.name) {
+      musicElement.querySelector(".album_art").src = "img/default_album_art.jpg";
+      songNameElement.textContent = "Not Listening";
+      document.querySelector(".artist_info").textContent = "No Artist";
+      document.querySelector(".playtime").style.visibility = "hidden";
+      last_song_name = "";
+      return;
+    }
 
   last_song_name = musicData.name;
 
@@ -93,7 +118,7 @@ async function updateMusicInfo() {
 
   if (musicData) {
     musicElement.querySelector(".album_art").src =
-      musicData.images && musicData.images[3]["#text"]
+      musicData.images?.[3]?.["#text"]
         ? musicData.images[3]["#text"]
         : "img/default_album_art.jpg";
 
@@ -145,31 +170,8 @@ async function updateMusicInfo() {
   //     `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
   // }
 
-  // update second +1 break on name change
-  const currentSongName = last_song_name;
-  while (currentSongName === last_song_name) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    currentSeconds++;
-    if (currentMinutes < 0) {
-      currentMinutes = 0;
-    }
-
-    if (currentSeconds >= 60) {
-      currentSeconds = 0;
-      currentMinutes++;
-    }
-
-    if (currentMinutes > songLengthMinutes || (currentMinutes === songLengthMinutes && currentSeconds > songLengthSeconds)) {
-      break;
-    } 
-
-    musicElement.querySelector(".current_time").textContent =
-      `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
-    
-      if (currentSongName !== last_song_name) {
-        break;
-      }
+  } catch (error) {
+    console.error("Unable to update music info:", error);
   }
-
 }
 
