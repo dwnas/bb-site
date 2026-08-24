@@ -1,6 +1,7 @@
 const tooltip = document.querySelector(".tooltip");
 const tooltipOffset = 10;
 const lastfm_api = "https://lastfm.mayu.amy.rip";
+const lastfm_fetch_interval = 20000; // 20 seconds
 
 let last_song_name = "";
 let currentMinutes = 0;
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ////////////////
 
   updateMusicInfo();
-  setInterval(updateMusicInfo, 10000);
+  setInterval(updateMusicInfo, lastfm_fetch_interval);
   setInterval(updateDisplayedPlaytime, 1000);
 });
 
