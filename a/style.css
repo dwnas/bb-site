@@ -316,3 +316,9 @@ li {
   color: var(--text-link-c);
   filter: grayscale(50%);
 }
+
+.divider {
+  opacity: 0.6;
+  margin: 0 2px;
+  filter: grayscale(20%);
+}
