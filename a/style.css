@@ -4,8 +4,10 @@
   --bg-c: #151415;
   --text-std-c: #cccbcc;
   --text-link-c: #d69ee7;
+  --text-link-c-opacity: #d69ee788;
   --text-link-c-alt: #935fa388;
   --border-c: #777677;
+  --text-selection-c: #e8bef5b8;
 
   --filter-1: sepia(100%) hue-rotate(250deg) saturate(60%);
 }
@@ -321,4 +323,10 @@ li {
   opacity: 0.6;
   margin: 0 2px;
   filter: grayscale(20%);
+}
+
+::selection {
+  background-color: var(--text-selection-c);
+  color: var(--bg-c);
+
 }
