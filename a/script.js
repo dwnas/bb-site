@@ -120,7 +120,7 @@ async function updateMusicInfo() {
 
     if (musicData.url && musicData.url !== "") {
       musicElement.querySelector(".artist_info").innerHTML =
-        `<a href="${musicData.url.split("/_/")[0]}" target="_blank" rel="noopener noreferrer">${musicData.artist}</a> - ${musicData.album}`;
+        `<a href="${musicData.url.split("/_/")[0]}" target="_blank" rel="noopener noreferrer">${musicData.artist}</a>`; // - ${musicData.album}`;
     } else {
       musicElement.querySelector(".artist_info").textContent =
         `${musicData.artist} - ${musicData.album}`;
