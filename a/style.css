@@ -164,15 +164,16 @@ html {
 
 .tooltip {
   position: absolute;
-  background-color: var(--bg-c);
+  background-color: rgb(21 20 21 / 70%);
   color: var(--text-std-c);
   border: var(--border-c) solid 1px;
   padding: 5px;
   font-size: 14px;
-  opacity: 0.7;
   z-index: 1000;
   pointer-events: none;
   max-width: 200px;
+  -webkit-backdrop-filter: grayscale(50%) blur(5px);
+  backdrop-filter: grayscale(50%) blur(1px);
 }
 
 .badges {
