@@ -1,13 +1,33 @@
 const tooltip = document.querySelector(".tooltip");
 const tooltipOffset = 10;
+// const lastfm_api = "http://127.0.0.1:3000";
 const lastfm_api = "https://lastfm.mayu.amy.rip";
-const lastfm_fetch_interval = 20000; // 20 seconds
+const lastfm_fetch_interval = 10000; // 10 seconds
 
 let last_song_name = "";
 let currentMinutes = 0;
 let currentSeconds = 0;
 let songLengthMinutes = 0;
 let songLengthSeconds = 0;
+
+async function formatTimeAgo(ago) {
+  const currentTime = Math.floor(Date.now() / 1000);
+  const timeDifference = currentTime - ago;
+
+  if (timeDifference < 0) {
+    return "0 seconds ago";
+  }
+
+  if (timeDifference < 60) {
+    return `${timeDifference} second${timeDifference === 1 ? "" : "s"} ago`;
+  } else if (timeDifference < 3600) {
+    return `${Math.floor(timeDifference / 60)} minute${Math.floor(timeDifference / 60) === 1 ? "" : "s"} ago`;
+  } else if (timeDifference < 86400) {
+    return `${Math.floor(timeDifference / 3600)} hour${Math.floor(timeDifference / 3600) === 1 ? "" : "s"} ago`;
+  } else {
+    return `${Math.floor(timeDifference / 86400)} day${Math.floor(timeDifference / 86400) === 1 ? "" : "s"} ago`;
+  }
+}
 
 document.querySelectorAll("a").forEach((a) => {
   a.addEventListener("mouseover", (e) => {
@@ -18,7 +38,7 @@ document.querySelectorAll("a").forEach((a) => {
       tooltip.style.top = e.pageY - tooltipOffset + "px";
 
       tooltip.style.transform = "translate(-50%, -100%)";
-    } 
+    }
   });
 
   a.addEventListener("mouseout", (e) => {
@@ -60,31 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateMusicInfo();
   setInterval(updateMusicInfo, lastfm_fetch_interval);
-  setInterval(updateDisplayedPlaytime, 1000);
 });
-
-function updateDisplayedPlaytime() {
-  const playtimeElement = document.querySelector(".playtime");
-  if (playtimeElement.style.visibility !== "visible") {
-    return;
-  }
-
-  if (
-    currentMinutes > songLengthMinutes ||
-    (currentMinutes === songLengthMinutes && currentSeconds >= songLengthSeconds)
-  ) {
-    return;
-  }
-
-  currentSeconds++;
-  if (currentSeconds >= 60) {
-    currentSeconds = 0;
-    currentMinutes++;
-  }
-
-  document.querySelector(".current_time").textContent =
-    `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
-}
 
 async function updateMusicInfo() {
   try {
@@ -96,37 +92,31 @@ async function updateMusicInfo() {
     const musicData = await response.json();
     const musicElement = document.querySelector(".music");
     const songNameElement = musicElement.querySelector(".song_name");
+    const pulserElement = document.getElementById("pulser");
+    const nowPlayingTextElement =
+      musicElement.querySelector(".now_playing_text");
 
-    if (!musicData || !musicData.name) {
-      musicElement.querySelector(".album_art").src = "img/default_album_art.jpg";
-      songNameElement.textContent = "Not Listening";
-      document.querySelector(".artist_info").textContent = "No Artist";
-      document.querySelector(".playtime").style.visibility = "hidden";
-      last_song_name = "";
-      return;
+    const songChanged = musicData.name !== last_song_name;
+    if (songChanged) {
+      last_song_name = musicData.name;
+
+      const marqueeTrack = document.createElement("span");
+      marqueeTrack.className = "marquee_track";
+      songNameElement.textContent = "";
+      songNameElement.appendChild(marqueeTrack);
+
+      if (musicData.url && musicData.url !== "") {
+        marqueeTrack.innerHTML = `<a href="${musicData.url}" target="_blank" rel="noopener noreferrer">${musicData.name}</a>`;
+      } else {
+        marqueeTrack.textContent = musicData.name;
+      }
     }
 
-  const songChanged = musicData.name !== last_song_name;
-  if (songChanged) {
-    last_song_name = musicData.name;
-
-    const marqueeTrack = document.createElement("span");
-    marqueeTrack.className = "marquee_track";
-    songNameElement.textContent = "";
-    songNameElement.appendChild(marqueeTrack);
-
-    if (musicData.url && musicData.url !== "") {
-      marqueeTrack.innerHTML = `<a href="${musicData.url}" target="_blank" rel="noopener noreferrer">${musicData.name}</a>`;
-    } else {
-      marqueeTrack.textContent = musicData.name;
-    }
-  }
-
-  if (musicData) {
-    musicElement.querySelector(".album_art").src =
-      musicData.images?.[3]?.["#text"]
-        ? musicData.images[3]["#text"]
-        : "img/default_album_art.jpg";
+    musicElement.querySelector(".album_art").src = musicData.images?.[3]?.[
+      "#text"
+    ]
+      ? musicData.images[3]["#text"]
+      : "img/default_album_art.jpg";
 
     if (musicData.url && musicData.url !== "") {
       musicElement.querySelector(".artist_info").innerHTML =
@@ -136,50 +126,28 @@ async function updateMusicInfo() {
         `${musicData.artist} - ${musicData.album}`;
     }
 
-    if (musicData.playtime) {
-      // musicElement.querySelector(".playtime").textContent = Math.floor(musicData.playtime.listening_time) + "/" + musicData.playtime.song_length;
-      currentMinutes = Math.floor(musicData.playtime.listening_time / 60);
-      currentSeconds = Math.floor(musicData.playtime.listening_time % 60);
-      songLengthMinutes = Math.floor(musicData.playtime.song_length / 60);
-      songLengthSeconds = Math.floor(musicData.playtime.song_length % 60);
-
-      musicElement.querySelector(".current_time").textContent =
-        `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
-      musicElement.querySelector(".total_time").textContent =
-        `${songLengthMinutes}:${songLengthSeconds.toString().padStart(2, "0")}`;
-
-      document.querySelector(".playtime").style.visibility = "visible";
+    if (musicData.nowplaying) {
+      pulserElement.classList.replace("pulser_off", "pulser_on");
+      nowPlayingTextElement.textContent = "now playing";
     } else {
-      document.querySelector(".playtime").style.visibility = "hidden";
+      pulserElement.classList.replace("pulser_on", "pulser_off");
+      if (musicData.lastplaytime) {
+        const timeAgo = await formatTimeAgo(parseInt(musicData.lastplaytime));
+        console.log("Time ago:", timeAgo);
+        nowPlayingTextElement.textContent = `played ${timeAgo}`;
+      }
+      else {
+        nowPlayingTextElement.textContent = "played some time ago";
+      }
     }
-  }
 
-  if (songChanged) {
-    songNameElement.classList.remove("marquee");
-    if (songNameElement.scrollWidth > songNameElement.clientWidth) {
-      songNameElement.classList.add("marquee");
+    if (songChanged) {
+      songNameElement.classList.remove("marquee");
+      if (songNameElement.scrollWidth > songNameElement.clientWidth) {
+        songNameElement.classList.add("marquee");
+      }
     }
-  }
-
-  // update song duration for 10s until next update
-  // for (let i = 0; i < 10; i++) {
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   currentSeconds++;
-  //   if (currentSeconds >= 60) {
-  //     currentSeconds = 0;
-  //     currentMinutes++;
-  //   }
-
-  //   if (currentMinutes > songLengthMinutes || (currentMinutes === songLengthMinutes && currentSeconds > songLengthSeconds)) {
-  //     break;
-  //   }
-
-  //   musicElement.querySelector(".current_time").textContent =
-  //     `${currentMinutes}:${currentSeconds.toString().padStart(2, "0")}`;
-  // }
-
   } catch (error) {
     console.error("Unable to update music info:", error);
   }
 }
-
