@@ -133,7 +133,6 @@ async function updateMusicInfo() {
       pulserElement.classList.replace("pulser_on", "pulser_off");
       if (musicData.lastplaytime) {
         const timeAgo = await formatTimeAgo(parseInt(musicData.lastplaytime));
-        console.log("Time ago:", timeAgo);
         nowPlayingTextElement.textContent = `played ${timeAgo}`;
       }
       else {
