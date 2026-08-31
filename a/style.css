@@ -189,9 +189,11 @@ html {
 
 .badges > a {
   flex: 0 0 88px;
+  height: 31px;
+  width: 88px;
 }
 
-.badges img {
+.badges img, .badges iframe {
   filter: var(--filter-1);
   width: 88px;
   height: 31px;
