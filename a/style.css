@@ -59,6 +59,7 @@ html {
 
   /* flip bg horizontally */
   overflow-x: hidden;
+  background-color: var(--black-c)
 }
 
 #bg {
