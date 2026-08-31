@@ -12,7 +12,8 @@
   --disabled-c: #555555;
   --enabled-c: #62db6d;
 
-  --filter-1: sepia(100%) hue-rotate(250deg) saturate(50%);
+  --filter-1: sepia(100%) hue-rotate(250deg) saturate(50%) brightness(0.95) ;
+  --filter-bg: sepia(100%) hue-rotate(250deg) saturate(50%);
 }
 
 @keyframes marquee {
@@ -77,7 +78,7 @@ html {
   background-position: center;
   transform: scaleX(-1);
 
-    filter: var(--filter-1) brightness(0.3) contrast(1.1) ;
+    filter: var(--filter-bg) brightness(0.3) contrast(1.1) ;
 }
 
 .content {
