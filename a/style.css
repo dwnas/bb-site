@@ -57,8 +57,6 @@ body {
 }
 html {
   /* background-color: var(--bg-c); */
-
-  /* flip bg horizontally */
   overflow-x: hidden;
   background-color: var(--black-c)
 }
