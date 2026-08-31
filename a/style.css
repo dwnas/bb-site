@@ -2,8 +2,9 @@
 
 :root {
   --bg-c: #151415;
+  --black-c: #000000;
   --text-std-c: #cccbcc;
-  --text-link-c: #d69ee7;
+  --text-link-c: #dea5f0;
   --text-link-c-opacity: #d69ee788;
   --text-link-c-alt: #935fa388;
   --border-c: #777677;
@@ -11,7 +12,7 @@
   --disabled-c: #555555;
   --enabled-c: #62db6d;
 
-  --filter-1: sepia(100%) hue-rotate(250deg) saturate(60%);
+  --filter-1: sepia(100%) hue-rotate(250deg) saturate(50%);
 }
 
 @keyframes marquee {
@@ -54,8 +55,28 @@ body {
   transition: all 0.3s ease-in-out;
 }
 html {
-  background-color: var(--bg-c);
+  /* background-color: var(--bg-c); */
+
+  /* flip bg horizontally */
   overflow-x: hidden;
+}
+
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -999;
+
+  overflow: hidden;
+  background-image: url("../img/bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  transform: scaleX(-1);
+
+    filter: var(--filter-1) brightness(0.3) contrast(1.1) ;
 }
 
 .content {
@@ -130,7 +151,7 @@ html {
   & .title {
     font-size: 25px;
     position: absolute;
-    background-color: var(--bg-c);
+    background-color: var(--black-c);
     top: -12.5px;
     z-index: 2;
   }
