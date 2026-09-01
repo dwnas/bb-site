@@ -258,7 +258,7 @@ li {
   width: 300px;
 }
 
-@media (max-width: 530px) {
+@media (max-width: 800px) {
   .main {
     flex-direction: column;
     align-items: center;
